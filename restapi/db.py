@@ -1,8 +1,10 @@
+import os
+from flask import current_app
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import os
-from .app import app
+from sqlalchemy.pool import StaticPool
 
-engine = create_engine("sqlite:///formula1_database.db", echo=True,pool_pre_ping=True)
+engine = create_engine('sqlite:///formula1_database.db', connect_args={
+    "check_same_thread": False}, echo=True, poolclass=StaticPool)
 Session = sessionmaker(bind=engine)
 session = Session()

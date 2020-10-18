@@ -1,6 +1,5 @@
-from .db import session
-
-from .models import (
+from restapi.db import session
+from restapi.models import (
     Circuit,
     Driver,
     Constructor,

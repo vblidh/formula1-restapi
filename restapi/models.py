@@ -12,21 +12,21 @@ class Circuit(Base):
     __tablename__ = 'circuits'
 
     circuitId = Column(Integer, primary_key=True)
-    circuitRef = Column(Text, nullable=False)
-    name = Column(Text, nullable=False)
-    location = Column(Text, nullable=False)
-    country = Column(Text, nullable=False)
-    lat = Column(Text)
-    lng = Column(Text)
-    alt = Column(Text)
-    url = Column(Text)
+    circuitRef = Column(String(15), nullable=False)
+    name = Column(String(50), nullable=False)
+    location = Column(String(50), nullable=False)
+    country = Column(String(50), nullable=False)
+    lat = Column(String(30))
+    lng = Column(String(30))
+    alt = Column(String(30))
+    url = Column(String(30))
 
     def to_json(self):
         return {
             "ref": self.circuitRef,
             "name": self.name,
-            "city": self.name,
-            "country": self.name,
+            "city": self.location,
+            "country": self.country,
         }
 
 
@@ -34,11 +34,11 @@ class Constructor(Base):
     __tablename__ = 'constructors'
 
     constructorId = Column(Integer, primary_key=True)
-    constructorRef = Column(Text, nullable=False, server_default=text("\"\""))
-    name = Column(Text, nullable=False, unique=True,
+    constructorRef = Column(String(30), nullable=False, server_default=text("\"\""))
+    name = Column(String(40), nullable=False, unique=True,
                   server_default=text("\"\""))
-    nationality = Column(Text)
-    url = Column(Text, nullable=False)
+    nationality = Column(String(30))
+    url = Column(String(50), nullable=False)
 
     def to_json(self):
         return {
