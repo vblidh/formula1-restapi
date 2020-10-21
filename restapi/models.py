@@ -34,7 +34,8 @@ class Constructor(Base):
     __tablename__ = 'constructors'
 
     constructorId = Column(Integer, primary_key=True)
-    constructorRef = Column(String(30), nullable=False, server_default=text("\"\""))
+    constructorRef = Column(String(30), nullable=False,
+                            server_default=text("\"\""))
     name = Column(String(40), nullable=False, unique=True,
                   server_default=text("\"\""))
     nationality = Column(String(30))
@@ -73,6 +74,9 @@ class Driver(Base):
             "wiki_url": self.url
         }
 
+    def get_full_name(self):
+        return self.forename + "  " + self.surname
+
 
 class Race(Base):
     __tablename__ = 'races'
@@ -80,11 +84,13 @@ class Race(Base):
     raceId = Column(Integer, primary_key=True)
     year = Column(Integer, nullable=False)
     round = Column(Integer, nullable=False)
-    circuitId = Column(Integer, nullable=False)
+    circuitId = Column(ForeignKey('circuits.circuitId'), nullable=False)
     name = Column(String(50), nullable=False)
     date = Column(String(50), nullable=False)
     time = Column(String(30), nullable=False)
     url = Column(String(30), nullable=False)
+
+    circuit = relationship('Circuit', lazy='joined')
 
     def to_json(self):
         return {
@@ -93,6 +99,7 @@ class Race(Base):
             "name": self.name,
             "date": self.date,
             "time_of_day": self.time,
+            "circuit": self.circuit.to_json()
         }
 
 
@@ -100,7 +107,7 @@ class Season(Base):
     __tablename__ = 'seasons'
 
     year = Column(Integer, primary_key=True)
-    url = Column(Text)
+    url = Column(String(30))
 
     def to_json(self):
         return {
@@ -113,7 +120,7 @@ class Status(Base):
     __tablename__ = 'status'
 
     statusId = Column(Integer)
-    status = Column(NullType, primary_key=True)
+    status = Column(String(30), primary_key=True)
 
 
 class ConstructorResult(Base):
@@ -124,18 +131,18 @@ class ConstructorResult(Base):
     constructorId = Column(ForeignKey(
         'constructors.constructorId'), nullable=False)
     points = Column(Integer)
-    status = Column(NullType)
+    status = Column(String())
 
-    constructor = relationship('Constructor')
+    constructor = relationship('Constructor', lazy='joined')
     race = relationship('Race')
 
     def to_json(self):
         return {
-         "race" : self.race.to_json(),
-         "team" : self.constructor.to_json(),
-         "points" : self.points,
-         "status" : self.status   
+            "race": self.race.to_json(),
+            "team": self.constructor.to_json(),
+            "points": self.points,
         }
+
 
 class ConstructorStanding(Base):
     __tablename__ = 'constructor_standings'
@@ -158,7 +165,7 @@ class ConstructorStanding(Base):
             "team": self.constructor.to_json(),
             "points": self.points,
             "position": self.position,
-            "wins" : self.wins
+            "wins": self.wins
         }
 
 
@@ -178,12 +185,13 @@ class DriverStanding(Base):
 
     def to_json(self):
         return {
-            "race" : self.race.to_json(),
+            "race": self.race.to_json(),
             "driver": self.driver.to_json(),
-            "points" : self.points,
-            "position" : self.position,
-            "wins" : self.wins
+            "points": self.points,
+            "position": self.position,
+            "wins": self.wins
         }
+
 
 class LapTime(Base):
     __tablename__ = 'lap_times'
@@ -212,7 +220,7 @@ class PitStop(Base):
     lap = Column(Integer, nullable=False)
     time = Column(Text, nullable=False)
     duration = Column(Text, nullable=False)
-    milliseconds = Column(Text)
+    milliseconds = Column(String(15))
 
     driver = relationship('Driver')
     race = relationship('Race')
@@ -238,13 +246,12 @@ class Qualifying(Base):
 
     def to_json(self):
         return {
-            "race": self.race.to_json(),
             "driver": self.driver.to_json(),
             "team": self.constructor.to_json(),
             "position": self.position,
             "Q1": self.q1,
-            "Q2" : self.q2,
-            "Q3" : self.q3
+            "Q2": self.q2,
+            "Q3": self.q3
         }
 
 
@@ -267,25 +274,37 @@ class Result(Base):
     fastestLap = Column(Integer)
     rank = Column(Integer)
     fastestLapTime = Column(Text)
-    fastestLapSpeed = Column(Numeric)
+    fastestLapSpeed = Column(String(10))
     statusId = Column(ForeignKey('status.statusId'))
 
     constructor = relationship('Constructor')
     driver = relationship('Driver')
     race = relationship('Race')
-    status = relationship('Status')
+    status = relationship('Status', lazy='joined')
 
     def to_json(self):
-        return {
-            "race": self.race.to_json(),
-            "driver": self.driver.to_json(),
-            "team" : self.constructor.to_json(),
-            "grid": self.grid,
-            "position": self.position,
-            "laps": self.laps,
-            "time": self.time,
-            "fastest_lap": self.fastestLap,
-            "fastest_lap_time": self.fastestLapTime,
-            "fastest_lap_speed": self.fastestLapSpeed,
-            "status": self.status.status
-        }
+        if self.statusId == 1:
+            return {
+                "driver": self.driver.to_json(),
+                "team": self.constructor.to_json(),
+                "grid": self.grid,
+                "position": self.position,
+                "laps": self.laps,
+                "time": time,
+                "fastest_lap": self.fastestLap,
+                "fastest_lap_time": self.fastestLapTime,
+                "fastest_lap_speed": self.fastestLapSpeed,
+                "status": self.status.status,
+            }
+        else:
+            return {
+                "driver": self.driver.to_json(),
+                "team": self.constructor.to_json(),
+                "grid": self.grid,
+                "position": self.position,
+                "laps": self.laps,
+                "fastest_lap": self.fastestLap,
+                "fastest_lap_time": self.fastestLapTime,
+                "fastest_lap_speed": self.fastestLapSpeed,
+                "status": self.status.status,
+            }

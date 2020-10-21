@@ -21,11 +21,8 @@ if __name__ == "__main__":
     # else:
     #     print("Did not find race")
 
-    results = api.get_results_from_race(1031)
-    res = []
-    for result in results:
-        res.append(result.to_json())
-    print(res)
+    results = api.get_results_from_race(1032, True)
+    print([r.to_json() for  r in results])
     # for race in races:
     #     print(race.to_json())
     # ham = api.get_driver("hamilton")
