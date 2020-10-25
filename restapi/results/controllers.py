@@ -1,6 +1,6 @@
 from typing import List
 from restapi.db import session
-from restapi.models import Qualifying, Result, Race
+from restapi.models import ConstructorResult, Qualifying, Result, Race
 
 from sqlalchemy.orm import joinedload
 
@@ -15,6 +15,10 @@ def get_team_result(race_id, constructor_id):
     results = session.query(Result).filter(Result.raceId == race_id, Result.constructorId == constructor_id).options(
         joinedload('driver')).all()
     return results
+
+def get_constructor_results_by_race(race_id):
+    return session.query(ConstructorResult).filter(ConstructorResult.raceId == race_id).order_by(ConstructorResult.points.desc()).all()
+
 
 
 def get_results_from_races(race_ids):
