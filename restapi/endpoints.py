@@ -19,6 +19,12 @@ def races(year="2020"):
     return {"Races": [race.to_json() for race in races]}
 
 
+@app.route('/drivers')
+def drivers():
+    drivers = api.get_drivers()
+    return {"Drivers": [driver.to_json() for driver in drivers]}
+
+
 @app.route('/results', defaults={"year": "2020", "season_round": "1"}, methods=['GET'])
 @app.route('/results/<year>', defaults={"season_round": "0"}, methods=['GET'])
 @app.route('/results/<year>/<season_round>', methods=['GET'])

@@ -9,6 +9,7 @@
 *.mdb
 *.pdb
 *.sqlite3
+*.sql
 
 ### Flask ###
 instance/*
@@ -156,7 +157,7 @@ dmypy.json
 
 ### vscode ###
 .vscode/*
-!.vscode/settings.json
+#!.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json

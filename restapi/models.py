@@ -27,6 +27,7 @@ class Circuit(Base):
             "name": self.name,
             "city": self.location,
             "country": self.country,
+            "wiki_url" : self.url,
         }
 
 
@@ -46,6 +47,8 @@ class Constructor(Base):
             "ref": self.constructorRef,
             "name": self.name,
             "country": self.nationality,
+            "id": self.constructorId,
+            "wiki_url": self.url
         }
 
 
@@ -185,7 +188,6 @@ class DriverStanding(Base):
 
     def to_json(self):
         return {
-            "race": self.race.to_json(),
             "driver": self.driver.to_json(),
             "points": self.points,
             "position": self.position,
@@ -290,7 +292,7 @@ class Result(Base):
                 "grid": self.grid,
                 "position": self.position,
                 "laps": self.laps,
-                "time": time,
+                "time": self.time,
                 "fastest_lap": self.fastestLap,
                 "fastest_lap_time": self.fastestLapTime,
                 "fastest_lap_speed": self.fastestLapSpeed,
