@@ -1,11 +1,27 @@
 import setuptools
+import os
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+NAME="restapi"
+VERSION = None
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+
+
+# Load the package's __version__.py module as a dictionary.
+about = {}
+if not VERSION:
+    with open(os.path.join(here, NAME, "__version__.py")) as f:
+        exec(f.read(), about)
+else:
+    about["__version__"] = VERSION
+
 setuptools.setup(
-    name="restapi", # Replace with your own username
-    version="0.0.1",
+    name=NAME, # Replace with your own username
+    version=VERSION,
     author="Viktor Blidh",
     author_email="victor.blidh@gmail.com",
     description="A small example package",
