@@ -6,7 +6,7 @@ from restapi.results.controllers import (
     get_team_result,
     get_qualifying_results
 )
-from restapi.races.controllers import get_race, get_races_in_year
+from restapi.races.controllers import get_race, get_races_in_year, get_last_race
 
 
 result_bp = Blueprint('result_bp', __name__, url_prefix='/api/results')
@@ -32,14 +32,15 @@ def get_result():
         except ValueError:
                 return "Invalid year/round, must be numbers", 400
     else:
-        return "No year specified in query param", 400
-    
+        races = [get_last_race()]
+        res = get_results_from_race(races[0].raceId)
+
     races.reverse()
     for race in races:
-        tmp = {"race" : race.to_json(), "results" : []}
+        tmp = {"race" : race.to_json()}
         race_results = list(filter(lambda x: x.raceId == race.raceId, res))
         if race_results:
-            tmp["results"].append([r.to_json() for r in race_results])
+            tmp["results"] = [r.to_json() for r in race_results]
             resp["race_results"].append(tmp)
     return resp 
 

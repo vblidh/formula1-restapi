@@ -30,7 +30,7 @@ def get_results_from_races(race_ids):
             joinedload('status')
     ).order_by(
         Race.round.desc(),
-        Result.position).all()
+        Result.positionOrder).all()
     return results
 
 

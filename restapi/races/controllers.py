@@ -17,6 +17,10 @@ def get_all_races():
     return session.query(Race).options(joinedload('circuit')).all()
 
 
+def get_last_race():
+    subq = session.query(func.max(Race.raceId))
+    return session.query(Race).filter(Race.raceId == subq).one_or_none()
+
 def get_id_of_last_race_of_years():
     subq = session.query(Race.raceId, Race.round, func.max(Race.round).over(
         partition_by=Race.year).label('last_round')).subquery()

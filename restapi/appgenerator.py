@@ -4,7 +4,7 @@ from restapi.db import init_db
 
 def create_app():
     app = Flask(__name__)
-    CORS(app, resources=[r'/api/'], methods=['GET'])
+    CORS(app, resources=[r'/api/*'], methods=['GET'])
     app.config.from_pyfile('config.py')
     init_db(app)
     from restapi.circuits.endpoints import circuit_bp
