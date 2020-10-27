@@ -251,9 +251,9 @@ class Qualifying(Base):
             "driver": self.driver.to_json(),
             "team": self.constructor.to_json(),
             "position": self.position,
-            "Q1": self.q1,
-            "Q2": self.q2,
-            "Q3": self.q3
+            "Q1": self.q1 if not self.q1 == "\\N" else None,
+            "Q2": self.q2 if not self.q2 == "\\N" else None,
+            "Q3": self.q3 if not self.q3 == "\\N" else None,
         }
 
 
