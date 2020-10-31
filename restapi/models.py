@@ -1,6 +1,5 @@
 # coding: utf-8
 from sqlalchemy import Column, ForeignKey, Integer, Numeric, Text, text, String
-from sqlalchemy.sql.sqltypes import NullType
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -164,7 +163,6 @@ class ConstructorStanding(Base):
 
     def to_json(self):
         return {
-            "race": self.race.to_json(),
             "team": self.constructor.to_json(),
             "points": self.points,
             "position": self.position,
@@ -191,7 +189,7 @@ class DriverStanding(Base):
             "driver": self.driver.to_json(),
             "points": self.points,
             "position": self.position,
-            "wins": self.wins
+            "wins": self.wins,
         }
 
 

@@ -29,7 +29,10 @@ def get_driver_standings():
             if _round:
                 _round = int(_round)
                 races = [get_race(year, _round)]
-                res = get_driver_standings_by_race(races[0].raceId)
+                if races:
+                    res = get_driver_standings_by_race(races[0].raceId)
+                else:
+                    return "Race not found", 404
             else:
                 races = get_races_in_year(year)
                 race_ids = [r.raceId for r in races]
@@ -44,7 +47,7 @@ def get_driver_standings():
     for race in races:
         tmp = {"race" : race.to_json()}
         race_standings = list(filter(lambda x: x.raceId == race.raceId, res))
-        tmp["race_standings"] = [s.to_json() for s in race_standings]
+        tmp["standings"] = [s.to_json() for s in race_standings]
         resp["driver_standings"].append(tmp)
 
     return resp
@@ -54,7 +57,7 @@ def get_driver_standings():
 def retreive_driver_standings(id):
     if id == 'latest':
         standings = get_current_driver_standings()
-        return {"standings": [s.to_json() for s in standings]}
+        return {"race": standings[0].race.to_json(), "driver_standings": [s.to_json() for s in standings]}
     else:
         try:
             id = int(id)
@@ -91,7 +94,7 @@ def get_constructor_standings():
         tmp = {"race" : race.to_json()}
         race_standings = list(filter(lambda x: x.raceId == race.raceId, res))
         if race_standings:
-            tmp["race_standings"] = [s.to_json() for s in race_standings]
+            tmp["standings"] = [s.to_json() for s in race_standings]
             resp["team_standings"].append(tmp)
     
     return resp

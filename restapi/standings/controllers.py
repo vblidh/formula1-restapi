@@ -7,7 +7,7 @@ from restapi.models import ConstructorStanding, DriverStanding, Race
 
 def get_current_driver_standings():
     subq = session.query(func.max(DriverStanding.raceId))
-    return session.query(DriverStanding).filter(DriverStanding.raceId == subq).order_by(DriverStanding.position).all()
+    return session.query(DriverStanding).filter(DriverStanding.raceId == subq).options(joinedload('race'), joinedload('driver')).order_by(DriverStanding.position).all()
 
 
 def get_individual_standing(standing_id):
