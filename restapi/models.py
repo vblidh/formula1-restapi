@@ -312,3 +312,17 @@ class Result(Base):
                 "fastest_lap_speed": self.fastestLapSpeed,
                 "status": self.status.status,
             }
+    def to_json2(self):
+        return {
+                "race": self.race.to_json(),
+                "grid": self.grid,
+                "position": self.position,
+                "position_order": self.positionOrder,
+                "laps": self.laps,
+                "time": self.time,
+                "points": self.points,
+                "fastest_lap": self.fastestLap,
+                "fastest_lap_time": self.fastestLapTime,
+                "fastest_lap_speed": self.fastestLapSpeed,
+                "status": self.status.status,
+        }

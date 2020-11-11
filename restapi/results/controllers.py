@@ -16,9 +16,14 @@ def get_team_result(race_id, constructor_id):
         joinedload('driver')).all()
     return results
 
+
 def get_constructor_results_by_race(race_id):
     return session.query(ConstructorResult).filter(ConstructorResult.raceId == race_id).order_by(ConstructorResult.points.desc()).all()
 
+
+def get_last_results_of_driver(driver_id, start, stop):  
+    return session.query(Result).filter(Result.driverId == driver_id).options(joinedload('status'), joinedload('race')
+    ).join(Race).order_by(Race.date.desc()).slice(start, stop).all()
 
 
 def get_results_from_races(race_ids):

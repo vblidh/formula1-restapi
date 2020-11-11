@@ -4,9 +4,11 @@ from restapi.results.controllers import (
     get_results_from_race,
     get_results_from_races,
     get_team_result,
-    get_qualifying_results
+    get_qualifying_results,
+    get_last_results_of_driver
 )
 from restapi.races.controllers import get_race, get_races_in_year, get_last_race
+from restapi.drivers.controllers import get_driver
 
 
 result_bp = Blueprint('result_bp', __name__, url_prefix='/api/results')
@@ -14,7 +16,7 @@ result_bp = Blueprint('result_bp', __name__, url_prefix='/api/results')
 
 @result_bp.route('/race', methods=['GET'])
 def get_result():
-    resp = {"race_results" : []}
+    resp = {"data": []}
     year = request.args.get('year')
     if year:
         try:
@@ -28,26 +30,26 @@ def get_result():
                 races = get_races_in_year(year)
                 race_ids = [r.raceId for r in races]
                 res = get_results_from_races(race_ids=race_ids)
-                
+
         except ValueError:
-                return "Invalid year/round, must be numbers", 400
+            return "Invalid year/round, must be numbers", 400
     else:
         races = [get_last_race()]
         res = get_results_from_race(races[0].raceId)
 
     races.reverse()
     for race in races:
-        tmp = {"race" : race.to_json()}
+        tmp = {"race": race.to_json()}
         race_results = list(filter(lambda x: x.raceId == race.raceId, res))
         if race_results:
             tmp["results"] = [r.to_json() for r in race_results]
-            resp["race_results"].append(tmp)
-    return resp 
+            resp["data"].append(tmp)
+    return resp
 
 
 @result_bp.route('/qualifying', methods=['GET'])
 def get_qualifying():
-    resp = {"qualifying_results" : []}
+    resp = {"data": []}
     year = request.args.get('year')
     if year:
         try:
@@ -61,18 +63,25 @@ def get_qualifying():
                 races = get_races_in_year(year)
                 race_ids = [r.raceId for r in races]
                 res = get_qualifying_results(race_ids)
-        
+
         except ValueError:
-            return "Invalid year/round, must be numbers", 400            
+            return "Invalid year/round, must be numbers", 400
     else:
         return "No year specified in query param", 400
 
     races.reverse()
     for race in races:
-        tmp = {"race" : race.to_json(), "results" : []}
+        tmp = {"race": race.to_json(), "results": []}
         quali_results = list(filter(lambda x: x.raceId == race.raceId, res))
         if quali_results:
             tmp["results"] = [qr.to_json() for qr in quali_results]
-            resp["qualifying_results"].append(tmp) 
+            resp["data"].append(tmp)
 
+    return resp
+
+
+@result_bp.route('/race/<driver_id>', methods=['GET'])
+def get_driver_results(driver_id):
+    res = get_last_results_of_driver(driver_id, 1,6)
+    resp = { "data": [r.to_json2() for r in res] }
     return resp
