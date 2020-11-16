@@ -1,6 +1,6 @@
 from typing import List
 from restapi.db import session
-from restapi.models import ConstructorResult, Qualifying, Result, Race
+from restapi.models import ConstructorResult, Driver, Qualifying, Result, Race
 
 from sqlalchemy.orm import joinedload
 
@@ -59,3 +59,9 @@ def get_qualifying_results(race_ids):
     else:
         qualies = []
     return qualies
+
+def get_all_driver_results(driver_id):
+    return session.query(Result).join(Driver).filter(Driver.driverId==driver_id).all()
+
+def get_all_driver_poles(driver_id):
+    return session.query(Qualifying).join(Driver).filter(Driver.driverId==driver_id, Qualifying.position==1).all()
