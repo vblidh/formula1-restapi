@@ -82,6 +82,13 @@ def get_qualifying():
 
 @result_bp.route('/race/<driver_id>', methods=['GET'])
 def get_driver_results(driver_id):
-    res = get_last_results_of_driver(driver_id, 1,6)
-    resp = { "data": [r.to_json2() for r in res] }
+    page = request.args.get('page', 1)
+    page_size = request.args.get('page_size', 10)
+    try:
+        start = int(page_size) * (int(page)-1)
+        end = start + int(page_size)
+    except ValueError:
+        return "Page & pagesize must be a number", 400
+    count, res = get_last_results_of_driver(driver_id, start, end)
+    resp = {"data": [r.to_json2() for r in res], "total_entries": count }
     return resp

@@ -22,8 +22,10 @@ def get_constructor_results_by_race(race_id):
 
 
 def get_last_results_of_driver(driver_id, start, stop):  
-    return session.query(Result).filter(Result.driverId == driver_id).options(joinedload('status'), joinedload('race')
+    total_count = session.query(Result).filter(Result.driverId == driver_id).count()
+    results = session.query(Result).filter(Result.driverId == driver_id).options(joinedload('status'), joinedload('race')
     ).join(Race).order_by(Race.date.desc()).slice(start, stop).all()
+    return total_count, results
 
 
 def get_results_from_races(race_ids):
