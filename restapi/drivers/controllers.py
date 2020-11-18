@@ -3,7 +3,7 @@ from restapi.models import Driver
 
 
 def get_drivers():
-    return session.query(Driver).all()
+    return session.query(Driver).order_by(Driver.dob.desc()).all()
 
 
 def get_driver(id):

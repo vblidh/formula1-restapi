@@ -10,7 +10,7 @@
 *.pdb
 *.sqlite3
 *.sql
-
+!generate_db.sql
 ### Flask ###
 instance/*
 !instance/.gitignore

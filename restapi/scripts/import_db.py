@@ -4,11 +4,14 @@ import csv
 
 if __name__ == "__main__":
     path = "C:\\Users\\swedwise\\Documents\\Formula 1 tables\\"
-    files = ["circuits", "constructor_results", "constructor_standings", "driver_standings",
+    files = ["circuits", "constructor_results", "constructor_standings", "driver_standings", "constructors",
              "drivers", "lap_times", "pit_stops", "qualifying", "races", "results", "seasons", "status"]
 
-    con = sqlite3.connect("sqlite:///../formula1_database.db")
+    con = sqlite3.connect("sqlite:///../../../formula1_database_tmp.db")
     cur = con.cursor()
+    sql_file = open('generate_db.sql')
+    sql_string = sql_file.read()
+    cur.executescript(sql_string)
     for file in files:
         name = path + file + ".csv"
         print(name)
@@ -17,8 +20,9 @@ if __name__ == "__main__":
             cols = tuple(next(reader))
             fin.seek(0)
             # TODO: Add constraints to table!!
-            cur.execute(f"DROP TABLE {file};") # use your column names here  
-            cur.execute(f"CREATE TABLE {file} {(cols)};") # use your column names here  
+            # cur.execute(f"DROP TABLE {file};") # use your column names here  
+            # cur.execute(f"CREATE TABLE {file} {(cols)};") # use your column names here  
+
             dr = csv.DictReader(fin)  # comma is default delimiter
             #to_db = [(i[col] for col in cols) for i in dr]
             to_db = []
