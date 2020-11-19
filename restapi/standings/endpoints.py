@@ -1,5 +1,4 @@
 from flask import Blueprint, request
-from flask.wrappers import Response
 
 from restapi.standings.controllers import (
     get_driver_standings_by_race,
@@ -13,7 +12,10 @@ from restapi.standings.controllers import (
 from restapi.races.controllers import (
     get_races_in_year,
     get_race,
+    get_last_race_of_years,
 )
+from restapi.teams.controllers import get_team_of_driver_in_races
+
 
 standings_bp = Blueprint('standings_bp', __name__, url_prefix='/api/standings')
 
@@ -55,17 +57,19 @@ def get_driver_standings():
 
 @standings_bp.route('/drivers/<id>', methods=['GET'])
 def retreive_driver_standings(id):
-    if id == 'latest':
-        standings = get_current_driver_standings()
-        return {"race": standings[0].race.to_json(), "driver_standings": [s.to_json() for s in standings]}
-    else:
-        try:
-            id = int(id)
-            res = get_individual_standing(id)
-            return res.to_json()
-        except ValueError:
-            "Invalid route param, either supply a number or the string 'latest'", 400
-    return ""
+    races = get_last_race_of_years()
+    race_ids = [r.raceId for r in races]
+    standings = get_driver_standings_by_races(race_ids, id)
+    teams =  get_team_of_driver_in_races(id, race_ids)
+    data = []
+    for s,t in zip(standings, teams):
+        tmp = s.to_json2()
+        tmp['team'] = t.to_json()
+        data.append(tmp)
+    resp = {"data": data}
+    return resp
+
+
 
 @standings_bp.route('/teams', methods=['GET'])
 def get_constructor_standings():

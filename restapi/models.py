@@ -191,6 +191,14 @@ class DriverStanding(Base):
             "position": self.position,
             "wins": self.wins,
         }
+    def to_json2(self):
+        return{
+            "driver": self.driver.to_json(),
+            "race" : self.race.to_json(),
+            "points": self.points,
+            "position": self.position,
+            "wins": self.wins, 
+        }
 
 
 class LapTime(Base):

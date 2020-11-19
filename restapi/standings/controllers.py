@@ -1,3 +1,4 @@
+from typing import Iterable
 from sqlalchemy.orm import joinedload
 from sqlalchemy import func
 
@@ -18,18 +19,30 @@ def get_driver_standings_by_race(race_id):
     return session.query(DriverStanding).filter(DriverStanding.raceId == race_id).options(joinedload('driver')).order_by(DriverStanding.position).all()
 
 
-def get_driver_standings_by_races(race_ids):
-    return session.query(DriverStanding).join(Race).filter(
-        DriverStanding.raceId.in_(race_ids)
-    ).options(joinedload('driver')
-              ).order_by(
-        Race.round.desc(),
-        DriverStanding.position
-    ).all()
+def get_driver_standings_by_races(race_ids, driver_id=0):
+    if driver_id == 0:
+        return session.query(DriverStanding).join(Race).filter(
+            DriverStanding.raceId.in_(race_ids)
+        ).options(joinedload('driver')
+                  ).order_by(
+            Race.round.desc(),
+            DriverStanding.position
+        ).all()
+    else:
+        return session.query(DriverStanding).join(Race).filter(
+            DriverStanding.raceId.in_(race_ids),
+            DriverStanding.driverId == driver_id
+        ).options(joinedload('driver'), joinedload('race')
+                  ).order_by(
+            Race.date.desc(),
+        ).all()
 
 
-def get_constructor_standings_from_race(race_id):
-    return session.query(ConstructorStanding).filter(ConstructorStanding.raceId == race_id).order_by(ConstructorStanding.position).all()
+def get_constructor_standings_from_race(race_ids):
+    if isinstance(race_ids, int):
+        return session.query(ConstructorStanding).filter(ConstructorStanding.raceId == race_ids).order_by(ConstructorStanding.position).all()
+    elif isinstance(race_ids, Iterable):
+        return session.query(ConstructorStanding).filter(ConstructorStanding.raceId.in_(race_ids)).order_by(ConstructorStanding.position).all()
 
 
 def get_constructor_standings_from_races(race_ids):
