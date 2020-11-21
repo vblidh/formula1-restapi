@@ -22,6 +22,7 @@ class Circuit(Base):
 
     def to_json(self):
         return {
+            "id" : self.circuitId,
             "ref": self.circuitRef,
             "name": self.name,
             "city": self.location,

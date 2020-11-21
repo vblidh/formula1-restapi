@@ -28,16 +28,28 @@ def get_last_results_of_driver(driver_id, start, stop):
     return total_count, results
 
 
-def get_results_from_races(race_ids):
-    results = session.query(Result).join(Race).filter(
-        Result.raceId.in_(race_ids)).options(
-            joinedload('driver'),
-            joinedload('constructor'),
-            joinedload('race'),
-            joinedload('status')
-    ).order_by(
-        Race.round.desc(),
-        Result.positionOrder).all()
+def get_results_from_races(race_ids, order_by = "round"):
+    results = []
+    if order_by == "round":
+        results = session.query(Result).join(Race).filter(
+            Result.raceId.in_(race_ids)).options(
+                joinedload('driver'),
+                joinedload('constructor'),
+                joinedload('race'),
+                joinedload('status')
+        ).order_by(
+            Race.round.desc(),
+            Result.positionOrder).all()
+    elif order_by == "date":
+        results = session.query(Result).join(Race).filter(
+            Result.raceId.in_(race_ids)).options(
+                joinedload('driver'),
+                joinedload('constructor'),
+                joinedload('race'),
+                joinedload('status')
+        ).order_by(
+            Race.date.desc(),
+            Result.positionOrder).all()
     return results
 
 
