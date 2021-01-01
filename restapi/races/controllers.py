@@ -3,6 +3,7 @@ from restapi.models import Race
 
 from sqlalchemy import func, over
 from sqlalchemy.orm import joinedload
+from datetime import date
 
 
 def get_race(year, round):
@@ -17,8 +18,18 @@ def get_all_races():
     return session.query(Race).options(joinedload('circuit')).all()
 
 
-def get_races_in_circuit(circuit_id, start, end):
-    return session.query(Race).options(joinedload('circuit')).filter(Race.circuitId == circuit_id).order_by(Race.date.desc()).slice(start, end).all()
+def get_races_in_circuit(circuit_id, start, end, include_upcoming=True):
+    if include_upcoming:
+        count = session.query(Race).filter(Race.circuitId == circuit_id).count()
+        races = session.query(Race).options(joinedload('circuit')).filter(Race.circuitId == circuit_id).order_by(Race.date.desc()).slice(start, end).all()
+        return count, races
+    else:
+        now = date.today()
+        count = session.query(Race).filter(
+            Race.circuitId == circuit_id, Race.date < str(now)).count()
+        races = session.query(Race).options(joinedload('circuit')).filter(
+            Race.circuitId == circuit_id, Race.date < str(now)).order_by(Race.date.desc()).slice(start, end).all()
+        return count, races
 
 
 def get_last_race():

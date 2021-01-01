@@ -32,16 +32,21 @@ def get_results(id):
     try:
         page = int(request.args.get('page', 1))
         page_size = int(request.args.get('page_size', 10))
-        
+        include_upcoming = bool(int(request.args.get('include_upcoming', 0)))
+
     except ValueError:
         return "Invalid page/page_size", 400
     start = (page-1)*page_size
     end = start + page_size
-    races = get_races_in_circuit(id, start, end)
+    print(include_upcoming)
+    count, races = get_races_in_circuit(
+        id, start, end, include_upcoming=include_upcoming)
     race_ids = [r.raceId for r in races]
     results = get_results_from_races(race_ids=race_ids, order_by="date")
-    resp = defaultdict(list)
+    data = defaultdict(lambda: defaultdict(list))
     for res in results:
-        resp[res.race.year].append(res.to_json())
-    
+        data[res.race.year]["race_id"] = res.race.raceId
+        data[res.race.year]["results"].append(res.to_json())
+    resp = {"data": data, "total_entries": count}
+    # print(len(resp.get('data')))
     return resp
