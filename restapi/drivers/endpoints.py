@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from restapi.drivers.controllers import get_driver, get_driver_by_code, get_drivers
 from restapi.drivers.calculations import calculate_podiums, calculate_poles
+from restapi.results.controllers import get_last_results_of_driver
 
 driver_bp = Blueprint('driver_blp', __name__, url_prefix='/api/drivers')
 
@@ -34,15 +35,27 @@ def retreive(id):
     except:
         return "Incorrect id, need to enter a number", 400
 
-@driver_bp.route('/podiums/<id>', methods=['GET'])
+@driver_bp.route('/<id>/podiums', methods=['GET'])
 def get_podiums(id):
 
     wins, podiums = calculate_podiums(id)
 
     return {"wins" : wins, "podiums": podiums }
 
-@driver_bp.route('/poles/<id>', methods=['GET'])
+@driver_bp.route('/<id>/poles', methods=['GET'])
 def get_poles(id):
     poles = calculate_poles(id)
     return str(poles)
 
+@driver_bp.route('/<id>/results', methods=['GET'])
+def get_driver_results(id):
+    page = request.args.get('page', 1)
+    page_size = request.args.get('page_size', 10)
+    try:
+        start = int(page_size) * (int(page)-1)
+        end = start + int(page_size)
+    except ValueError:
+        return "Page & pagesize must be a number", 400
+    count, res = get_last_results_of_driver(id, start, end)
+    resp = {"data": [r.to_json2() for r in res], "total_entries": count }
+    return resp

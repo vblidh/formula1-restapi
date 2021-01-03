@@ -7,7 +7,7 @@ from restapi.results.controllers import (
     get_qualifying_results,
     get_last_results_of_driver
 )
-from restapi.races.controllers import get_race, get_races_in_year, get_last_race
+from restapi.races.controllers import get_race, get_races_in_year, get_last_race, get_race_by_id
 from restapi.drivers.controllers import get_driver
 
 
@@ -80,15 +80,18 @@ def get_qualifying():
     return resp
 
 
-@result_bp.route('/race/<driver_id>', methods=['GET'])
-def get_driver_results(driver_id):
-    page = request.args.get('page', 1)
-    page_size = request.args.get('page_size', 10)
+@result_bp.route("/race/<id>", methods=['GET'])
+def retrieve(id):
     try:
-        start = int(page_size) * (int(page)-1)
-        end = start + int(page_size)
+        id = int(id)
     except ValueError:
-        return "Page & pagesize must be a number", 400
-    count, res = get_last_results_of_driver(driver_id, start, end)
-    resp = {"data": [r.to_json2() for r in res], "total_entries": count }
-    return resp
+        return "Incorrect race id", 400
+    race = get_race_by_id(id)
+    if race:
+        res = get_results_from_race(id)
+        resp = {"data": {}}
+        resp["data"]["race"] = race.to_json()
+        resp["data"]["results"] = [r.to_json() for r in res]
+        return resp
+    else:
+        return "Race not found", 404

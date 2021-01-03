@@ -38,7 +38,6 @@ def get_results(id):
         return "Invalid page/page_size", 400
     start = (page-1)*page_size
     end = start + page_size
-    print(include_upcoming)
     count, races = get_races_in_circuit(
         id, start, end, include_upcoming=include_upcoming)
     race_ids = [r.raceId for r in races]
@@ -48,5 +47,4 @@ def get_results(id):
         data[res.race.year]["race_id"] = res.race.raceId
         data[res.race.year]["results"].append(res.to_json())
     resp = {"data": data, "total_entries": count}
-    # print(len(resp.get('data')))
     return resp

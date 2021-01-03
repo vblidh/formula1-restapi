@@ -4,7 +4,7 @@ from restapi.races.controllers import (
     get_last_race, get_race, 
     get_all_races,
     get_races_in_year,
-    get_last_race_of_years
+    get_last_race_of_years,
 )
 
 

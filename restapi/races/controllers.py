@@ -9,6 +9,8 @@ from datetime import date
 def get_race(year, round):
     return session.query(Race).filter(Race.year == year, Race.round == round).options(joinedload('circuit')).one_or_none()
 
+def get_race_by_id(id):
+    return session.query(Race).filter(Race.raceId == id).one_or_none()
 
 def get_races_in_year(year):
     return session.query(Race).filter(Race.year == year).order_by(Race.round).all()
