@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS "circuits" (
 	"url"	TEXT,
 	PRIMARY KEY("circuitId")
 );
-DROP TABLE IF EXISTS "constructor_results";
-CREATE TABLE IF NOT EXISTS "constructor_results" (
+DROP TABLE IF EXISTS "constructorresults";
+CREATE TABLE IF NOT EXISTS "constructorresults" (
 	"constructorResultsId"	INTEGER,
 	"raceId"	INTEGER NOT NULL,
 	"constructorId"	INTEGER NOT NULL,
@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS "constructor_results" (
 	FOREIGN KEY("raceId") REFERENCES "races"("raceId"),
 	PRIMARY KEY("constructorResultsId")
 );
-DROP TABLE IF EXISTS "constructor_standings";
-CREATE TABLE IF NOT EXISTS "constructor_standings" (
+DROP TABLE IF EXISTS "constructorstandings";
+CREATE TABLE IF NOT EXISTS "constructorstandings" (
 	"constructorStandingsId"	INTEGER,
 	"raceId"	INTEGER NOT NULL,
 	"constructorId"	INTEGER NOT NULL,
@@ -63,8 +63,8 @@ CREATE TABLE IF NOT EXISTS "constructor_standings" (
 	FOREIGN KEY("raceId") REFERENCES "races"("raceId"),
 	PRIMARY KEY("constructorStandingsId")
 );
-DROP TABLE IF EXISTS "driver_standings";
-CREATE TABLE IF NOT EXISTS "driver_standings" (
+DROP TABLE IF EXISTS "driverstandings";
+CREATE TABLE IF NOT EXISTS "driverstandings" (
 	"driverStandingsId"	INTEGER,
 	"raceId"	INTEGER NOT NULL,
 	"driverId"	INTEGER NOT NULL,
@@ -89,8 +89,8 @@ CREATE TABLE IF NOT EXISTS "drivers" (
 	"url"	TEXT,
 	PRIMARY KEY("driverId")
 );
-DROP TABLE IF EXISTS "lap_times";
-CREATE TABLE IF NOT EXISTS "lap_times" (
+DROP TABLE IF EXISTS "laptimes";
+CREATE TABLE IF NOT EXISTS "laptimes" (
 	"raceId"	INTEGER,
 	"driverId"	INTEGER,
 	"lap"	INTEGER,
@@ -101,8 +101,8 @@ CREATE TABLE IF NOT EXISTS "lap_times" (
 	FOREIGN KEY("raceId") REFERENCES "races"("raceId"),
 	PRIMARY KEY("raceId","driverId","lap")
 );
-DROP TABLE IF EXISTS "pit_stops";
-CREATE TABLE IF NOT EXISTS "pit_stops" (
+DROP TABLE IF EXISTS "pitstops";
+CREATE TABLE IF NOT EXISTS "pitstops" (
 	"raceId"	INTEGER,
 	"driverId"	INTEGER,
 	"stop"	INTEGER,
