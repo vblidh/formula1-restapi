@@ -20,17 +20,24 @@ def get_all_races():
     return session.query(Race).options(joinedload('circuit')).all()
 
 
-def get_races_in_circuit(circuit_id, start, end, include_upcoming=True):
+def get_races_in_circuit(circuit_id:int, start:int, end:int, include_upcoming:bool=True):
     if include_upcoming:
         count = session.query(Race).filter(Race.circuitId == circuit_id).count()
-        races = session.query(Race).options(joinedload('circuit')).filter(Race.circuitId == circuit_id).order_by(Race.date.desc()).slice(start, end).all()
+        if end:
+            races = session.query(Race).options(joinedload('circuit')).filter(Race.circuitId == circuit_id).order_by(Race.date.desc()).slice(start, end).all()
+        else:
+            races = session.query(Race).options(joinedload('circuit')).filter(Race.circuitId == circuit_id).order_by(Race.date.desc()).all()
         return count, races
     else:
         now = date.today()
         count = session.query(Race).filter(
             Race.circuitId == circuit_id, Race.date < str(now)).count()
-        races = session.query(Race).options(joinedload('circuit')).filter(
-            Race.circuitId == circuit_id, Race.date < str(now)).order_by(Race.date.desc()).slice(start, end).all()
+        if end:
+            races = session.query(Race).options(joinedload('circuit')).filter(
+                Race.circuitId == circuit_id, Race.date < str(now)).order_by(Race.date.desc()).slice(start, end).all()
+        else:
+            races = session.query(Race).options(joinedload('circuit')).filter(
+                Race.circuitId == circuit_id, Race.date < str(now)).order_by(Race.date.desc()).all()
         return count, races
 
 

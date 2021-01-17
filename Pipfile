@@ -13,6 +13,7 @@ restapi = {editable = true, path = "."}
 flask = "*"
 flask-cors="*"
 python-dotenv = "*"
+mysqlclient = "*"
 
 [requires]
 python_version = "3.8"

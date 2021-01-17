@@ -7,7 +7,7 @@ from sqlalchemy.orm import joinedload
 
 def get_results_from_race(race_id):
     results = session.query(Result).filter(Result.raceId == race_id).options(
-        joinedload('driver'), joinedload('constructor'), joinedload('status')).order_by(Result.position).all()
+        joinedload('driver'), joinedload('constructor'), joinedload('status')).order_by(Result.positionOrder).all()
     return results
 
 

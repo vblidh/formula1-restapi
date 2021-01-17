@@ -1,6 +1,8 @@
 # coding: utf-8
-from sqlalchemy import Column, ForeignKey, Integer, Numeric, Text, text, String
+from sqlalchemy.schema import Column, ForeignKey
+from sqlalchemy.types import String, Integer, Date, Time
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.expression import text
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -22,12 +24,12 @@ class Circuit(Base):
 
     def to_json(self):
         return {
-            "id" : self.circuitId,
+            "id": self.circuitId,
             "ref": self.circuitRef,
             "name": self.name,
             "city": self.location,
             "country": self.country,
-            "wiki_url" : self.url,
+            "wiki_url": self.url,
         }
 
 
@@ -56,9 +58,9 @@ class Driver(Base):
     __tablename__ = 'drivers'
 
     driverId = Column(Integer, primary_key=True)
-    driverRef = Column(Text, nullable=False)
+    driverRef = Column(String(10), nullable=False)
     number = Column(Integer, nullable=False)
-    code = Column(String(3))
+    code = Column(String(10))
     forename = Column(String(30))
     surname = Column(String(30))
     dob = Column(String(20))
@@ -89,8 +91,8 @@ class Race(Base):
     round = Column(Integer, nullable=False)
     circuitId = Column(ForeignKey('circuits.circuitId'), nullable=False)
     name = Column(String(50), nullable=False)
-    date = Column(String(50), nullable=False)
-    time = Column(String(30), nullable=False)
+    date = Column(Date, nullable=True)
+    time = Column(Time, nullable=False)
     url = Column(String(30), nullable=False)
 
     circuit = relationship('Circuit', lazy='joined')
@@ -100,8 +102,8 @@ class Race(Base):
             "year": self.year,
             "round": self.round,
             "name": self.name,
-            "date": self.date,
-            "time_of_day": self.time,
+            "date": str(self.date),
+            "time_of_day": str(self.time) if self.time else "",
             "circuit": self.circuit.to_json()
         }
 
@@ -127,14 +129,14 @@ class Status(Base):
 
 
 class ConstructorResult(Base):
-    __tablename__ = 'constructor_results'
+    __tablename__ = 'constructorresults'
 
     constructorResultsId = Column(Integer, primary_key=True)
     raceId = Column(ForeignKey('races.raceId'), nullable=False)
     constructorId = Column(ForeignKey(
         'constructors.constructorId'), nullable=False)
     points = Column(Integer)
-    status = Column(String())
+    status = Column(String(10))
 
     constructor = relationship('Constructor', lazy='joined')
     race = relationship('Race')
@@ -148,7 +150,7 @@ class ConstructorResult(Base):
 
 
 class ConstructorStanding(Base):
-    __tablename__ = 'constructor_standings'
+    __tablename__ = 'constructorstandings'
 
     constructorStandingsId = Column(Integer, primary_key=True)
     raceId = Column(ForeignKey('races.raceId'), nullable=False)
@@ -156,7 +158,7 @@ class ConstructorStanding(Base):
         'constructors.constructorId'), nullable=False)
     points = Column(Integer, nullable=False)
     position = Column(Integer, nullable=False)
-    positionText = Column(Text)
+    positionText = Column(String(10))
     wins = Column(Integer, nullable=False)
 
     constructor = relationship('Constructor')
@@ -172,14 +174,14 @@ class ConstructorStanding(Base):
 
 
 class DriverStanding(Base):
-    __tablename__ = 'driver_standings'
+    __tablename__ = 'driverstandings'
 
     driverStandingsId = Column(Integer, primary_key=True)
     raceId = Column(ForeignKey('races.raceId'), nullable=False)
     driverId = Column(ForeignKey('drivers.driverId'), nullable=False)
     points = Column(Integer)
     position = Column(Integer)
-    positionText = Column(Text)
+    positionText = Column(String(10))
     wins = Column(Integer)
 
     driver = relationship('Driver')
@@ -192,18 +194,19 @@ class DriverStanding(Base):
             "position": self.position,
             "wins": self.wins,
         }
+
     def to_json2(self):
         return{
             "driver": self.driver.to_json(),
-            "race" : self.race.to_json(),
+            "race": self.race.to_json(),
             "points": self.points,
             "position": self.position,
-            "wins": self.wins, 
+            "wins": self.wins,
         }
 
 
 class LapTime(Base):
-    __tablename__ = 'lap_times'
+    __tablename__ = 'laptimes'
 
     raceId = Column(ForeignKey('races.raceId'),
                     primary_key=True, nullable=False)
@@ -211,15 +214,15 @@ class LapTime(Base):
                       primary_key=True, nullable=False)
     lap = Column(Integer, primary_key=True, nullable=False)
     position = Column(Integer)
-    time = Column(Text)
-    milliseconds = Column(Text)
+    time = Column(String(20))
+    milliseconds = Column(String(30))
 
     driver = relationship('Driver')
     race = relationship('Race')
 
 
 class PitStop(Base):
-    __tablename__ = 'pit_stops'
+    __tablename__ = 'pitstops'
 
     raceId = Column(ForeignKey('races.raceId'),
                     primary_key=True, nullable=False)
@@ -227,9 +230,9 @@ class PitStop(Base):
                       primary_key=True, nullable=False)
     stop = Column(Integer, primary_key=True, nullable=False)
     lap = Column(Integer, nullable=False)
-    time = Column(Text, nullable=False)
-    duration = Column(Text, nullable=False)
-    milliseconds = Column(String(15))
+    time = Column(String(20), nullable=False)
+    duration = Column(String(25), nullable=False)
+    milliseconds = Column(String(25))
 
     driver = relationship('Driver')
     race = relationship('Race')
@@ -245,9 +248,9 @@ class Qualifying(Base):
         'constructors.constructorId'), nullable=False)
     number = Column(Integer)
     position = Column(Integer, nullable=False)
-    q1 = Column(Text)
-    q2 = Column(Text)
-    q3 = Column(Text)
+    q1 = Column(String(15))
+    q2 = Column(String(15))
+    q3 = Column(String(15))
 
     constructor = relationship('Constructor')
     driver = relationship('Driver')
@@ -274,15 +277,15 @@ class Result(Base):
     number = Column(Integer)
     grid = Column(Integer)
     position = Column(Integer)
-    positionText = Column(Text)
-    positionOrder = Column(Text)
+    positionText = Column(String(15))
+    positionOrder = Column(String(15))
     points = Column(Integer)
     laps = Column(Integer)
-    time = Column(Text)
+    time = Column(String(50))
     milliseconds = Column(Integer)
     fastestLap = Column(Integer)
     rank = Column(Integer)
-    fastestLapTime = Column(Text)
+    fastestLapTime = Column(String(15))
     fastestLapSpeed = Column(String(10))
     statusId = Column(ForeignKey('status.statusId'))
 
@@ -321,17 +324,18 @@ class Result(Base):
                 "fastest_lap_speed": self.fastestLapSpeed,
                 "status": self.status.status,
             }
+
     def to_json2(self):
         return {
-                "race": self.race.to_json(),
-                "grid": self.grid,
-                "position": self.position,
-                "position_order": self.positionOrder,
-                "laps": self.laps,
-                "time": self.time,
-                "points": self.points,
-                "fastest_lap": self.fastestLap,
-                "fastest_lap_time": self.fastestLapTime,
-                "fastest_lap_speed": self.fastestLapSpeed,
-                "status": self.status.status,
+            "race": self.race.to_json(),
+            "grid": self.grid,
+            "position": self.position,
+            "position_order": self.positionOrder,
+            "laps": self.laps,
+            "time": self.time,
+            "points": self.points,
+            "fastest_lap": self.fastestLap,
+            "fastest_lap_time": self.fastestLapTime,
+            "fastest_lap_speed": self.fastestLapSpeed,
+            "status": self.status.status,
         }

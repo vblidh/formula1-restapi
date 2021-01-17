@@ -33,11 +33,14 @@ def get_results(id):
         page = int(request.args.get('page', 1))
         page_size = int(request.args.get('page_size', 10))
         include_upcoming = bool(int(request.args.get('include_upcoming', 0)))
-
     except ValueError:
         return "Invalid page/page_size", 400
-    start = (page-1)*page_size
-    end = start + page_size
+    if page_size != -1:
+        start = (page-1)*page_size
+        end = start + page_size
+    else:
+        start = 0
+        end = 0
     count, races = get_races_in_circuit(
         id, start, end, include_upcoming=include_upcoming)
     race_ids = [r.raceId for r in races]
