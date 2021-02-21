@@ -13,12 +13,14 @@ def create_app():
     from restapi.results.endpoints import result_bp
     from restapi.standings.endpoints import standings_bp
     from restapi.teams.endpoints import team_bp
+    from restapi.laps.endpoints import laptime_bp
     app.register_blueprint(circuit_bp)
     app.register_blueprint(driver_bp)
     app.register_blueprint(race_bp)
     app.register_blueprint(result_bp)
     app.register_blueprint(standings_bp)
     app.register_blueprint(team_bp)
+    app.register_blueprint(laptime_bp)
     return app
 
 

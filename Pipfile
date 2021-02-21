@@ -6,13 +6,14 @@ verify_ssl = true
 [dev-packages]
 pytest = "*"
 autopep8 = "*"
+python-dotenv = "*"
 
 [packages]
 sqlalchemy = "*"
 restapi = {editable = true, path = "."}
 flask = "*"
 flask-cors="*"
-python-dotenv = "*"
+
 mysqlclient = "*"
 
 [requires]

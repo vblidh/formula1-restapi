@@ -37,7 +37,6 @@ def retreive(id):
 
 @driver_bp.route('/<id>/podiums', methods=['GET'])
 def get_podiums(id):
-
     wins, podiums = calculate_podiums(id)
 
     return {"wins" : wins, "podiums": podiums }
@@ -45,6 +44,7 @@ def get_podiums(id):
 @driver_bp.route('/<id>/poles', methods=['GET'])
 def get_poles(id):
     poles = calculate_poles(id)
+    
     return str(poles)
 
 @driver_bp.route('/<id>/results', methods=['GET'])

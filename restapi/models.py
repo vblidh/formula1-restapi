@@ -217,8 +217,16 @@ class LapTime(Base):
     time = Column(String(20))
     milliseconds = Column(String(30))
 
-    driver = relationship('Driver')
+    driver = relationship('Driver', lazy='joined')
     race = relationship('Race')
+
+    def to_json(self):
+        return {
+            "driver": self.driver.to_json(),
+            "lap": self.lap,
+            "time": self.time,
+            "milliseconds": self.milliseconds
+        }
 
 
 class PitStop(Base):
